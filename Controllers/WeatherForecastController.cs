@@ -9,6 +9,8 @@ using Microsoft.Extensions.Logging;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using testApi.Services;
+using testApi.Extension;
+using System.Net;
 
 namespace testApi.Controllers
 {
@@ -31,7 +33,7 @@ namespace testApi.Controllers
 
         //Test permettant d'écrire dans le response sans return 
         [HttpPost]
-        [Route("/api/test")]
+        [Route("/apki/test")]
         public void testPost([FromBody] string test){
             //pour utiliser cette partie, il faut que la requête soit formaté en json
             _logger.LogInformation($"valeur test: {test}");
@@ -42,45 +44,54 @@ namespace testApi.Controllers
                 writer.Flush();
             }
 
+
         }
 
         [HttpGet]
-        [Route("/api/testget")]
-        public void testGet([FromBody] string test){
+        [Route("/api/{*url}")]
+        public void testGet([FromBody] string test, string url)
+        {
             
             //pour utiliser cette partie, il faut que la requête soit formaté en json
             _logger.LogInformation($"valeur test: {test}");
+            _logger.LogInformation($"valeur urltest: {url}");
 
-            //https://stackoverflow.com/questions/12373738/how-do-i-set-a-cookie-on-httpclients-httprequestmessage
-            HttpClient client = new HttpClient();
-            //var uriBuilder = new UriBuilder("test.php", "test");
-            var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/WeatherForecast");
-            httpRequestMessage.Headers.Add("Host", "test.com");
-            httpRequestMessage.Headers.Add("Cookie", "__utmc=266643403; __utmz=266643403.1537352460.3.3.utmccn=(referral)|utmcsr=google.co.uk|utmcct=/|utmcmd=referral; __utma=266643403.817561753.1532012719.1537357162.1537361568.5; __utmb=266643403; __atuvc=0%7C34%2C0%7C35%2C0%7C36%2C0%7C37%2C48%7C38; __atuvs=5ba2469fbb02458f002");
-            var httpResponseMessage = client.SendAsync(httpRequestMessage).Result;
-            var httpContent = httpResponseMessage.Content;
-            string result = httpResponseMessage.Content.ReadAsStringAsync().Result;
-
-            var headers = httpResponseMessage.Content.Headers;
-            foreach(var header in headers)
+            if (!String.IsNullOrEmpty(url))
             {
-                string valHeader="";
-                foreach(var val in header.Value){
-                    //TODO:  a tester avec des multiples values pour un header et sans le foreach sinon?
-                    valHeader+=val;
+                // ----------------REQUEST PART-----------------//
+                HttpClient client = new HttpClient();
+                //var uriBuilder = new UriBuilder("test.php", "test");
+                var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, $"http://192.168.1.55/api/{url}");
+
+                //TODO: Send request header
+                //httpRequestMessage.SetHeader(Request);
+
+
+
+                // ----------------RESPONSE PART-----------------//
+                //TODO: Ajouter une exception si le ws n'est pas joignable 
+                var httpResponseMessage = client.SendAsync(httpRequestMessage).Result;
+                string result = httpResponseMessage.Content.ReadAsStringAsync().Result;
+
+                //Define header in Response 
+                httpResponseMessage.SetResponseHeader(Response);
+
+                //Define return statusCode
+                Response.StatusCode = (int)httpResponseMessage.StatusCode;
+
+                //Return body
+                using (StreamWriter writer = new StreamWriter(Response.Body, Encoding.UTF8))
+                {
+                    writer.Write(result);
+                    writer.Flush();
                 }
-                Response.Headers.Add(header.Key,valHeader);
-                valHeader="";
             }
-            //TODO: Ajouter un cookie dans le ws de test pour voir comment le récupérer 
-            IEnumerable<string> cookies = httpResponseMessage.Headers.SingleOrDefault(header => header.Key == "Set-Cookie").Value;
-            Response.StatusCode = (int)httpResponseMessage.StatusCode;
-            
-            using (StreamWriter writer = new StreamWriter(Response.Body, Encoding.UTF8))
+            else
             {
-                writer.Write(result);
-                writer.Flush();
+                Response.StatusCode = (int)HttpStatusCode.NotFound;
             }
+            
+
 
         }
 
@@ -142,7 +153,7 @@ namespace testApi.Controllers
         }
 
 
-        [Route("api/BodyTypes/ReadBinaryDataManual")]
+        [Route("apki/BodyTypes/ReadBinaryDataManual")]
         public async Task<byte[]> RawBinaryDataManual()
         {
             /* lecture de binaire et retour en base 64
