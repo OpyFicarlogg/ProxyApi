@@ -15,7 +15,7 @@ using System.Net;
 namespace testApi.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("[controller]")] //Replace by [Route("/api/{*value}")]? 
     public class ProxyController : ControllerBase
     {
         private readonly ProxyService _ProxyService;
@@ -27,45 +27,52 @@ namespace testApi.Controllers
             _logger = logger;
         }
 
+        //TODO: work with swagger  https://docs.microsoft.com/fr-fr/aspnet/core/tutorials/getting-started-with-swashbuckle?view=aspnetcore-5.0&tabs=visual-studio
+        /// <summary>
+        /// Proxy for Get Http Verb
+        /// </summary>
+        /// <param name="value">Url you want to acces through the proxy </param>  
         [HttpGet]
         [Route("/api/{*value}")]
-        public void ProxyGet( string value)
+        public void ProxyGet(string value)
         {
-            _ProxyService.ProxyGet(Request, Response, value); //Exception avec erreur 500
-
-
-
-            /*String url = _ProxyService.getWs(value);
-            if (!String.IsNullOrEmpty(url))
-            {
-                // ----------------REQUEST PART-----------------//
-                HttpClient client = new HttpClient();
-                var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, url);
-                //TODO: Set body 
-                //TODO: Send request header
-                //httpRequestMessage.SetHeader(Request);
-                var httpResponseMessage = client.SendAsync(httpRequestMessage).Result;
-
-                // ----------------RESPONSE PART-----------------//
-                //TODO: Ajouter une exception si le ws n'est pas joignable 
-                string result = httpResponseMessage.Content.ReadAsStringAsync().Result;
-
-                Response.SetResponseHeader(httpResponseMessage);           
-                Response.StatusCode = (int)httpResponseMessage.StatusCode;
-                Response.WriteBody(result); // must be at the end because it start the response
-            }
-            else
-            {
-                Response.StatusCode = (int)HttpStatusCode.NotFound;
-            }*/
+            _ProxyService.ProxyGet(Request, Response, value); 
+            //TODO: add try catch
         }
 
-
+        /// <summary>
+        /// Proxy for Post Http Verb
+        /// </summary>
+        /// <param name="value">Url you want to acces through the proxy </param>  
         [HttpPost]
         [Route("/api/{*value}")]
-        public void ProxyPost([FromBody] string body, string value)
+        public void ProxyPost(string value)
         {
             _ProxyService.ProxyGet(Request, Response, value);
         }
+
+        /// <summary>
+        /// Proxy for Put Http Verb
+        /// </summary>
+        /// <param name="value">Url you want to acces through the proxy </param>  
+        [HttpPut]
+        [Route("/api/{*value}")]
+        public void ProxyPut(string value)
+        {
+            _ProxyService.ProxyGet(Request, Response, value);
+        }
+
+        /// <summary>
+        /// Proxy for Delete Http Verb
+        /// </summary>
+        /// <param name="value">Url you want to acces through the proxy </param>  
+        [HttpDelete]
+        [Route("/api/{*value}")]
+        public void ProxyDelete(string value)
+        {
+            _ProxyService.ProxyGet(Request, Response, value);
+        }
+
+        
     }
 }
