@@ -12,6 +12,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using testApi.Services;
 
 namespace testApi
 {
@@ -36,6 +37,9 @@ namespace testApi
             {
                 options.AllowSynchronousIO = true;
             });
+
+            //services.AddSingleton<ProxyService>();
+            services.AddScoped<ProxyService>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>

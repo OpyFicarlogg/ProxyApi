@@ -35,24 +35,5 @@ namespace testApi.Extension
 
             return allHeaders;
         }
-
-
-        /// <summary>  
-        ///Set header from HttpResponseMessage in HttpResponse 
-        /// </summary>  
-        /// <param name="response">HttpResponse 
-        public static void SetResponseHeader(this HttpResponseMessage httpResponseMessage, HttpResponse response)
-        {
-            var headers = httpResponseMessage.Headers.Concat(httpResponseMessage.Content.Headers);
-
-            foreach (var header in headers)
-            {
-                //Need to escape this because postman crash 
-                if (!header.Key.Equals("Transfer-Encoding", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    response.Headers.Add(header.Key, string.Join(" ", header.Value));
-                }
-            }
-        }
     }
 }

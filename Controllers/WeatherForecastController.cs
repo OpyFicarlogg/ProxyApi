@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using testApi.Services;
 using testApi.Extension;
 using System.Net;
@@ -33,7 +32,7 @@ namespace testApi.Controllers
 
         //Test permettant d'écrire dans le response sans return 
         [HttpPost]
-        [Route("/apki/test")]
+        [Route("/apik/test")]
         public void testPost([FromBody] string test){
             //pour utiliser cette partie, il faut que la requête soit formaté en json
             _logger.LogInformation($"valeur test: {test}");
@@ -48,13 +47,13 @@ namespace testApi.Controllers
         }
 
         [HttpGet]
-        [Route("/api/{*url}")]
-        public void testGet([FromBody] string test, string url)
+        [Route("/apix/{*url}")]
+        public void testGet([FromBody] string body, string url)
         {
             
             //pour utiliser cette partie, il faut que la requête soit formaté en json
-            _logger.LogInformation($"valeur test: {test}");
-            _logger.LogInformation($"valeur urltest: {url}");
+            _logger.LogInformation($"valeur test: {body}");
+            _logger.LogInformation($"valeur urltest: {url}"); // Ou Request.Path
 
             if (!String.IsNullOrEmpty(url))
             {
@@ -74,7 +73,7 @@ namespace testApi.Controllers
                 string result = httpResponseMessage.Content.ReadAsStringAsync().Result;
 
                 //Define header in Response 
-                httpResponseMessage.SetResponseHeader(Response);
+                //httpResponseMessage.SetResponseHeader(Response);
 
                 //Define return statusCode
                 Response.StatusCode = (int)httpResponseMessage.StatusCode;
@@ -96,6 +95,7 @@ namespace testApi.Controllers
         }
 
         [HttpPost]
+        [Route("/apipost")]
         public async Task<string> ReadStringDataManual()
         {
             //https://weblog.west-wind.com/posts/2017/sep/14/accepting-raw-request-body-content-in-aspnet-core-api-controllers
@@ -104,7 +104,7 @@ namespace testApi.Controllers
             //client.BaseAddress = new Uri("http://localhost/api/WeatherForecast");
             /*client.DefaultRequestHeaders.Accept.Add(
                 new MediaTypeWithQualityHeaderValue("application/json"));*/
-            var responseString = await client.GetStringAsync("http://localhost/api/WeatherForecast");
+            //var responseString = await client.GetStringAsync("http://localhost/api/WeatherForecast");
 
             //Création d'un header
             Response.Headers.Add("test","test");
@@ -139,21 +139,19 @@ namespace testApi.Controllers
                 cookieRet += $"key: {cookie.Key} value: {cookie.Value}";
             }
 
+            /*using (var content = new StreamContent(Request.Body))
+            {
+               var  contentString = await content.ReadAsStringAsync();
+            }*/
 
+            var content = new StreamContent(Request.Body);
+            var contentString = await content.ReadAsStringAsync();
 
-            //Récupération du body avec tout type de content 
-            var body ="";
-            using (StreamReader reader = new StreamReader(Request.Body, Encoding.UTF8))
-            {  
-                body = await reader.ReadToEndAsync();
-                
-            }
-
-            return $"Body: {body} \n header: {headerRet} \n query: {QueryRet} \n cookie: {cookies}";
+            return $"Body: {contentString} \n header: {headerRet} \n query: {QueryRet} \n cookie: {cookies}";
         }
 
 
-        [Route("apki/BodyTypes/ReadBinaryDataManual")]
+        [Route("api/BodyTypes/ReadBinaryDataManual")]
         public async Task<byte[]> RawBinaryDataManual()
         {
             /* lecture de binaire et retour en base 64
