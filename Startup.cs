@@ -38,9 +38,6 @@ namespace testApi
                 options.AllowSynchronousIO = true;
             });
 
-            //services.AddSingleton<ProxyService>();
-            services.AddScoped<ProxyService>();
-
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
