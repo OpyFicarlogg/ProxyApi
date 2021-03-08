@@ -1,9 +1,10 @@
 ﻿
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using testApi.Services;
+using ProxyApi.Services;
+using System.Net.Http;
 
-namespace testApi.Controllers
+namespace ProxyApi.Controllers
 {
     [ApiController]
     [Route("[controller]")] //Replace by [Route("/api/{*value}")]? 
@@ -25,7 +26,7 @@ namespace testApi.Controllers
         [HttpGet, HttpPost, HttpPut, HttpDelete, HttpPatch]
         [Route("/api/{*value}")]
         public void Proxy(string value)
-        {
+        { 
             _ProxyService = new ProxyService(Request, Response);
             _ProxyService.Proxy(value); 
         }        

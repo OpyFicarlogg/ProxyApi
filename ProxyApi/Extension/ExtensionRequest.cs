@@ -3,10 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace testApi.Extension
+namespace ProxyApi.Extension
 {
     public static class ExtensionRequest
     {
@@ -31,6 +32,12 @@ namespace testApi.Extension
             }
 
             return body;
+        }
+
+        public static async Task<string> GetBodyAsyncStreamContent(this HttpRequest request)
+        {
+            StreamContent content = new StreamContent(request.Body); //Get body
+            return await content.ReadAsStringAsync();
         }
     }
 }

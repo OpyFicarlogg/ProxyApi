@@ -3,7 +3,7 @@ using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
 
-namespace testApi.Extension
+namespace ProxyApi.Extension
 {
     public static class ExtensionHttpRequestMessage
     {

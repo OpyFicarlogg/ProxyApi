@@ -4,10 +4,10 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
-using testApi.Dao.Interfaces;
-using testApi.Extension;
+using ProxyApi.Dao.Interfaces;
+using ProxyApi.Extension;
 
-namespace testApi.Services
+namespace ProxyApi.Services
 {
     public class ProxyService
     {
@@ -37,6 +37,7 @@ namespace testApi.Services
             {
                 StreamContent content = new StreamContent(request.Body); //Get body
                 var contentString = await content.ReadAsStringAsync();
+                //string contentString = await request.GetBodyAsyncStreamContent();
                 // ----------------REQUEST PART-----------------//
                 HttpRequestMessage httpReqMessage = new HttpRequestMessage(new HttpMethod(request.Method), url)
                 {

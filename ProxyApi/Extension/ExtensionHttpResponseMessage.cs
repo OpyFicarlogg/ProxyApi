@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 
-namespace testApi.Extension
+namespace ProxyApi.Extension
 {
     public static class ExtensionHttpResponseMessage
     {

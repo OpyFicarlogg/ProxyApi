@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using testApi.Dao.Interfaces;
-using testApi.Extension;
+using ProxyApi.Dao.Interfaces;
+using ProxyApi.Extension;
 
-namespace testApi.Services
+namespace ProxyApi.Services
 {
     public class WsService : IWsService
     {

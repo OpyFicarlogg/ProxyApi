@@ -5,7 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 
-namespace testApi.Extension
+namespace ProxyApi.Extension
 {
     public static class ExtensionResponse
     {
