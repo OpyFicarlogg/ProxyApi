@@ -13,8 +13,9 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using ProxyApi.Extension;
 
-namespace ProxyApiTest
+namespace ProxyApiTest.Tests.Services
 {
     [TestClass] // Herit from ProxyService to acces protected methods https://stackoverflow.com/questions/13416223/unit-testing-c-sharp-protected-methods
     public class ProxyTest
@@ -25,7 +26,7 @@ namespace ProxyApiTest
         private Mock<IWsService> WsService;
 
         [TestMethod]
-        public void TestMethod1()
+        public async Task ProxyMethodTest()
         {
             //Mock Response
             this.SetResponse();
@@ -41,7 +42,14 @@ namespace ProxyApiTest
             prox.SetWsService(WsService.Object);
             prox.Proxy("test");
 
+            response.Object.Body.Seek(0, SeekOrigin.Begin); //Because of StreamMemory
+            string body = await response.Object.Body.GetStringAsyncStreamContent();
+
+            string qryVal = response.Object.Headers["header1"];
+            
             Assert.AreEqual(response.Object.StatusCode, 200);
+            Assert.AreEqual("BodyContent",body);
+            Assert.AreEqual("valHeader1",qryVal);
 
             WsService.Verify(); //https://stackoverflow.com/questions/980554/what-is-the-purpose-of-verifiable-in-moq
             response.Verify();

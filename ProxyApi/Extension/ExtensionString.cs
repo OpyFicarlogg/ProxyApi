@@ -9,7 +9,7 @@ namespace ProxyApi.Extension
     {
         public static string RemoveValue(this string value, string toRemove){
             int index = value.IndexOf(toRemove);
-            return index != -1? value.Remove(index, index + toRemove.Length) : value;
+            return index != -1? value.Remove(index,toRemove.Length) : value;
         }
     }
 }

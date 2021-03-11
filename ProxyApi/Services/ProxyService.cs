@@ -35,8 +35,7 @@ namespace ProxyApi.Services
             String url = _wsService.GetWs(value);
             if (!String.IsNullOrEmpty(url))
             {
-                StreamContent content = new StreamContent(request.Body); //Get body
-                var contentString = await content.ReadAsStringAsync();
+                var contentString = await request.Body.GetStringAsyncStreamContent();
                 //string contentString = await request.GetBodyAsyncStreamContent();
                 // ----------------REQUEST PART-----------------//
                 HttpRequestMessage httpReqMessage = new HttpRequestMessage(new HttpMethod(request.Method), url)
@@ -44,7 +43,7 @@ namespace ProxyApi.Services
                     Content = new StringContent(contentString, Encoding.UTF8) // Need to create Content to add body + Content headers 
                 };
                 httpReqMessage.SetHeader(request);
-                httpReqMessage.SetProperty(request);
+                httpReqMessage.SetPropertyOption(request);
                 //TODO:  request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", userAccountEntity.GetAccessToken());
 
                 try
@@ -56,12 +55,12 @@ namespace ProxyApi.Services
 
                     response.SetResponseHeader(httpRespMessage);
                     response.StatusCode = (int)httpRespMessage.StatusCode;
-                    response.WriteBody(result); // must be at the end because it start the response
+                    response.Body.SetStringStream(result); // must be at the end because it start the response
                 }
                 catch (Exception e)
                 {
                     response.StatusCode = (int)HttpStatusCode.ServiceUnavailable;
-                    response.WriteBody(Regex.Replace(e.Message, "([0-9]{1,3}.){3}[0-9]{1,3}:[0-9]{1,5}", "")); //Hide Ip in return
+                    response.Body.SetStringStream(Regex.Replace(e.Message, "([0-9]{1,3}.){3}[0-9]{1,3}:[0-9]{1,5}", "")); //Hide Ip in return
                 }
             }
             else

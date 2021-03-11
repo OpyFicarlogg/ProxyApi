@@ -42,12 +42,11 @@ namespace ProxyApi.Extension
             }
         }
 
-        public static void SetProperty(this HttpRequestMessage httpRequestMessage, HttpRequest request)
+        public static void SetPropertyOption(this HttpRequestMessage httpRequestMessage, HttpRequest request)
         {
             foreach (var query in request.Query)
             {
-                //TODO: see httpRequestMessage.Options? 
-                httpRequestMessage.Properties.Add(query.Key, query.Value);
+                httpRequestMessage.Options.Set(new HttpRequestOptionsKey<object>(query.Key), query.Value);
             }
         }
     }
