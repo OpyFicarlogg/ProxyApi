@@ -1,6 +1,7 @@
 ﻿
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using ProxyApi.Dao;
 using ProxyApi.Services;
 using System.Net.Http;
 
@@ -12,9 +13,11 @@ namespace ProxyApi.Controllers
     {
         private ProxyService _ProxyService;
         private readonly ILogger<ProxyController> _logger;
+        private readonly ServiceDao _serviceDao;
 
-        public ProxyController(ILogger<ProxyController> logger)
+        public ProxyController(ILogger<ProxyController> logger, ServiceDao serviceDao)
         {
+            _serviceDao = serviceDao;
             _logger = logger;
         }
 
@@ -27,7 +30,7 @@ namespace ProxyApi.Controllers
         [Route("/api/{*value}")]
         public void Proxy(string value)
         { 
-            _ProxyService = new ProxyService(Request, Response);
+            _ProxyService = new ProxyService(Request, Response, _serviceDao);
             _ProxyService.Proxy(value); 
         }        
     }

@@ -13,6 +13,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using ProxyApi.Services;
+using WsFirst.Models.Database;
+using Microsoft.Extensions.Options;
+using ProxyApi.Dao;
 
 namespace ProxyApi
 {
@@ -43,6 +46,15 @@ namespace ProxyApi
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "ProxyApi", Version = "v1" });
             });
+
+            // requires using Microsoft.Extensions.Options
+            services.Configure<ProxyDatabaseSettings>(
+            Configuration.GetSection(nameof(ProxyDatabaseSettings)));
+
+            services.AddSingleton<IProxyDatabaseSettings>(sp =>
+            sp.GetRequiredService<IOptions<ProxyDatabaseSettings>>().Value);
+
+            services.AddSingleton<ServiceDao>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

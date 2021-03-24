@@ -59,7 +59,7 @@ namespace ProxyApiTest.Tests.Extensions
         {
             Stream stream = new MemoryStream();
             stream.SetStringStream(value);
-            stream.Seek(0, SeekOrigin.Begin);
+            stream.Seek(0, SeekOrigin.Begin); //https://stackoverflow.com/questions/17801761/converting-stream-to-string-and-back-what-are-we-missing
 
             StreamContent content = new StreamContent(stream); //Get body
             string result =  await content.ReadAsStringAsync();

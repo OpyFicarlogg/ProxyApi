@@ -6,20 +6,24 @@ using System.Text;
 using System.Text.RegularExpressions;
 using ProxyApi.Dao.Interfaces;
 using ProxyApi.Extension;
+using ProxyApi.Models;
+using ProxyApi.Dao;
 
 namespace ProxyApi.Services
 {
     public class ProxyService
     {
         private IWsService _wsService;
+        private readonly ServiceDao _serviceDao;
 
         //Mockit 
         private HttpClient httpClient;
         private readonly HttpRequest request;
         private readonly HttpResponse response;
 
-        public ProxyService(HttpRequest _request, HttpResponse _response)
+        public ProxyService(HttpRequest _request, HttpResponse _response, ServiceDao serviceDao)
         {
+            this._serviceDao = serviceDao;
             this._wsService = new WsService();
             this.request = _request;
             this.response = _response;
@@ -32,7 +36,12 @@ namespace ProxyApi.Services
         /// <param name="value">Url you want to acces through the proxy </param>  
         public async void Proxy(string value)
         {
-            String url = _wsService.GetWs(value);
+            //WsSevice devra retourner un objet avec les paramètres ? 
+            Service service = _serviceDao.GetService(value);
+            String url = service is not null ? service.Redirect + value.RemoveValue(service.RequestValue) : null;
+
+            //String url = _wsService.GetWs(value);
+
             if (!String.IsNullOrEmpty(url))
             {
                 var contentString = await request.Body.GetStringAsyncStreamContent();
