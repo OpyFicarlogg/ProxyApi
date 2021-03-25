@@ -29,7 +29,7 @@ namespace ProxyApi.Controllers
         [HttpGet, HttpPost, HttpPut, HttpDelete, HttpPatch]
         [Route("/api/{*value}")]
         public void Proxy(string value)
-        { 
+        {
             _ProxyService = new ProxyService(Request, Response, _serviceDao);
             _ProxyService.Proxy(value); 
         }        

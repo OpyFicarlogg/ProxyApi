@@ -14,6 +14,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using ProxyApi.Extension;
+using ProxyApi.Models;
 
 namespace ProxyApiTest.Tests.Services
 {
@@ -33,13 +34,12 @@ namespace ProxyApiTest.Tests.Services
             //Mock Request
             this.SetRequest();
             //Mock WsService
-            this.setWsService("http://test.com");
+            this.SetWsService();
             //Mock HttpClient
-            this.setHttpClient(200, "BodyContent");
+            this.SetHttpClient(200, "BodyContent");
 
-            ProxyServiceTest prox = new ProxyServiceTest(request.Object, response.Object);
+            ProxyServiceTest prox = new ProxyServiceTest(request.Object, response.Object, WsService.Object);
             prox.SetHttpClient(httpClient);
-            prox.SetWsService(WsService.Object);
             prox.Proxy("test");
 
             response.Object.Body.Seek(0, SeekOrigin.Begin); //Because of StreamMemory
@@ -104,7 +104,7 @@ namespace ProxyApiTest.Tests.Services
         }
 
 
-        public void setHttpClient(int status, string bodyContent)
+        public void SetHttpClient(int status, string bodyContent)
         {
             Mock<HttpResponseMessage> httpResponseMessage = new Mock<HttpResponseMessage>
             {
@@ -125,11 +125,19 @@ namespace ProxyApiTest.Tests.Services
             httpClient = new HttpClient(mockHttpMessageHandler.Object);
         }
 
-        public void setWsService(string url)
+        public void SetWsService()
         {
+
+            Service service = new()
+            {
+                Name = "test",
+                Redirect = "http://test.com",
+                RequestValue = "test"
+            };
+
             //Mock WsService
             WsService = new Mock<IWsService>();
-            WsService.Setup(x => x.GetWs(It.IsAny<string>())).Returns(url).Verifiable();
+            WsService.Setup(x => x.GetService(It.IsAny<string>())).Returns(service).Verifiable();
         }
     }
 }

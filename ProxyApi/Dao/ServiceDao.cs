@@ -3,10 +3,11 @@ using MongoDB.Bson;
 using System.Linq;
 using ProxyApi.Models;
 using WsFirst.Models.Database;
+using ProxyApi.Dao.Interfaces;
 
 namespace ProxyApi.Dao
 {
-    public class ServiceDao
+    public class ServiceDao : IWsService
     {
         private readonly IMongoCollection<Service> _service;
 

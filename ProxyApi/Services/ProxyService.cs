@@ -13,18 +13,16 @@ namespace ProxyApi.Services
 {
     public class ProxyService
     {
-        private IWsService _wsService;
-        private readonly ServiceDao _serviceDao;
+        private readonly IWsService _serviceDao;
 
         //Mockit 
         private HttpClient httpClient;
         private readonly HttpRequest request;
         private readonly HttpResponse response;
 
-        public ProxyService(HttpRequest _request, HttpResponse _response, ServiceDao serviceDao)
+        public ProxyService(HttpRequest _request, HttpResponse _response, IWsService serviceDao)
         {
             this._serviceDao = serviceDao;
-            this._wsService = new WsService();
             this.request = _request;
             this.response = _response;
             httpClient = new HttpClient();
@@ -36,11 +34,8 @@ namespace ProxyApi.Services
         /// <param name="value">Url you want to acces through the proxy </param>  
         public async void Proxy(string value)
         {
-            //WsSevice devra retourner un objet avec les paramètres ? 
             Service service = _serviceDao.GetService(value);
             String url = service is not null ? service.Redirect + value.RemoveValue(service.RequestValue) : null;
-
-            //String url = _wsService.GetWs(value);
 
             if (!String.IsNullOrEmpty(url))
             {
@@ -78,12 +73,6 @@ namespace ProxyApi.Services
             }
 
             
-        }
-
-        //Allow to mock DAO IWsService
-        protected void SetWsService(IWsService wsService)
-        {
-            this._wsService = wsService;
         }
 
         //Allow to mock HttpClient
